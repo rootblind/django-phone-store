@@ -1,0 +1,46 @@
+{% extends 'core/base.html' %}
+{% block title %}Cart{% endblock %}
+
+{% block basecontent %}
+    <h2 class="mb-12 text-2xl font-bold mb-4 text-center">Your Cart</h2>
+    {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success p-4 mb-4 text-green-800 bg-green-100 border border-green-400 rounded">
+                    {{ message }}
+                </div>
+            {% endfor %}
+    {% endif %}
+    <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+    {% if cart_items %}
+        <ul>
+            <div class="grid grid-cols-3 gap-3"></div>
+            {% for item in cart_items %}
+                <div>
+                    <a href="{% url 'item:detail' item.item.id %}">
+                        <div>
+                            <img src="{{item.item.image.url}}" width="256" height="256" class="mt-6 rounded-t-xl">
+                        </div>
+
+                        <div class="mt-6 p-6 bg-white rounded-b-xl">
+                            <h2 class="text-l">{{item.item.name}}</h2>
+                            <p class="text-gray-500">Price Per Unit: {{item.item.price}} RON</p>
+                            <p class="text-gray-500">Quantity: x{{item.quantity}}</p>
+                            <p class="text-gray-500">Price: {{item.total_price}} RON</p>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+            </ul>
+            </div>
+        </ul>
+        <div class="mt-6 p-6 bg-white rounded-xl">
+            <p class="text-xl font-semibold">Total Price: {{total_price}} RON</p>
+            <a href="{% url 'cart:checkout' %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-yellow-300 text-black rounded-xl hover:bg-yellow-500">
+                Checkout
+            </a>
+        </div>
+    {% else %}
+        <p class="text-gray-500 text-center text-xl font-semibold">Your cart is empty!</p>
+    {% endif %}
+    </div>
+{% endblock %}
