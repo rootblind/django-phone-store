@@ -10,5 +10,6 @@ urlpatterns = [
     path('<int:pk>/', views.detail, name='detail'),
     path('<int:pk>/delete/', views.delete, name='delete'),
     path('<int:pk>/edit/', views.edit, name='edit'),
+    path('predictive_search/', views.predictive_search, name='predictive_search'),
 
 ]

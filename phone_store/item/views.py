@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 from .forms import NewItemForm, EditItemForm
 from .models import item, Category
@@ -23,6 +24,17 @@ def browse(request):
         'categories': categories,
         'category_id': int(category_id),
     })
+
+def predictive_search(request):
+    query = request.GET.get('query', '').strip()
+
+    suggestions = []
+
+    if query:
+        items = item.objects.filter((Q(name__icontains=query)))[:5]
+        suggestions = [{"id": Item.id, "name": Item.name, "image": Item.image.url, "price": float(Item.price)} for Item in items]
+
+    return JsonResponse(suggestions, safe=False)
 
 def detail(request, pk):
     item_input = get_object_or_404(item, pk=pk)

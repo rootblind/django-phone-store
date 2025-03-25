@@ -6,10 +6,50 @@
     <div class="pb-6 grid grid-cols-4 gap-4 bg-gray-100 rounded-xl">
         <div class="col-span-1">
             <form method="get" action="{% url 'item:browse' %}">
-                <input name="query" class="w-full py-4 px-6 border rounded-xl" type="text" value="{{query}}" placeholder="Find the phone you are looking for!">
-
+                <input id="search" name="query" class="w-full py-4 px-6 border rounded-xl" type="text" value="{{ query }}" placeholder="Find the phone you are looking for!">
                 <button class="mt-2 py-4 px-8 text-lg bg-teal-500 text-white rounded-xl">Search</button>
             </form>
+
+            <div id="suggestions" class="bg-white shadow-md rounded-xl mt-2 absolute w-full hidden"></div>
+
+            <script>
+                document.getElementById("search").addEventListener("input", function() {
+                    let query = this.value.trim();
+                    let suggestionsBox = document.getElementById("suggestions");
+
+                    if (query.length > 1) {
+                        fetch(`predictive_search/?query=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            suggestionsBox.innerHTML = "";
+                            if (data.length > 0) {
+                                suggestionsBox.classList.remove("hidden");
+                                data.forEach(item => {
+                                    let suggestion = document.createElement("div");
+                                    suggestion.classList.add("p-2", "hover:bg-gray-200", "cursor-pointer");
+                                    suggestion.innerHTML = `<a href="/items/${item.id}" class="flex items-center">
+                                        <img src="${item.image}" class="w-10 h-10 mr-2">
+                                        <span>${item.name} - ${item.price} RON</span>
+                                    </a>`;
+                                    suggestionsBox.appendChild(suggestion);
+                                });
+                            } else {
+                                suggestionsBox.classList.add("hidden");
+                            }
+                        });
+                    } else {
+                        suggestionsBox.classList.add("hidden");
+                    }
+                });
+
+                document.addEventListener("click", function(event) {
+                    let suggestionsBox = document.getElementById("suggestions");
+                    if (!document.getElementById("search").contains(event.target)) {
+                        suggestionsBox.classList.add("hidden");
+                    }
+                });
+            </script>
+
 
             <hr class="my-6">
 
