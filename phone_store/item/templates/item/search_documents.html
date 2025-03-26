@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block basecontent %}
+<div class="col-span-3">
+    <div class="grid grid-rows-3 gap-3">
+        {% if results %}
+        <form method="get" action="{% url 'item:search_documents' %}">
+            <input type="hidden" name="query" value="{{ query }}">
+            <input type="hidden" name="reverse" value="{{ reverse_order }}">
+            <button class="mt-2 py-4 px-8 text-lg bg-teal-500 text-white rounded-xl">
+                Change order
+            </button>
+        </form>
+            {% for result in results %}
+                {% if result.path %}
+                    <div>
+                        <a href="{{ result.path }}">
+                            <div class="mt-6 p-6 bg-white rounded-b-xl">
+                                <img src="../../media/pdf.png" class="mt-6 rounded-t-xl" width="32" height="32">
+                                <h2 class="text-l">{{ result.title }}</h2>
+                            </div>
+                        </a>
+                    </div>
+                {% else %}
+                    <div>
+                        <p class="text-red-500">Error: Missing document path.</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div>
+                <h1 class="text-2xl text-center">
+                    No documents found!
+                </h1>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -10,6 +10,11 @@
                 <button class="mt-2 py-4 px-8 text-lg bg-teal-500 text-white rounded-xl">Search</button>
             </form>
 
+            <form method="get" action="{% url 'item:search_documents' %}">
+                <input id="find" name="query" class="w-full py-4 px-6 border rounded-xl" type="text" value="{{ query }}" placeholder="Search for specifications">
+                <button class="mt-2 py-4 px-8 text-lg bg-teal-500 text-white rounded-xl">Find</button>
+            </form>
+
             <div id="suggestions" class="bg-white shadow-md rounded-xl mt-2 absolute w-full hidden"></div>
 
             <script>

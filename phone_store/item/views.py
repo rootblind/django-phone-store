@@ -2,9 +2,15 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.conf import settings
+
+from whoosh.index import open_dir
+from whoosh.qparser import QueryParser
 
 from .forms import NewItemForm, EditItemForm
 from .models import item, Category
+
+import os
 
 def browse(request):
     query = request.GET.get('query', '')
@@ -24,6 +30,32 @@ def browse(request):
         'categories': categories,
         'category_id': int(category_id),
     })
+
+def search_documents(request):
+    query = request.GET.get("query", "")
+    reverse_order = request.GET.get("reverse", "false")
+    index_path = os.path.join(settings.BASE_DIR, "indexdir")
+    results = []
+    if query:
+        ix = open_dir(index_path)
+        with ix.searcher() as searcher:
+            query_obj = QueryParser("content", ix.schema).parse(query)
+            results = searcher.search(query_obj, limit=10, sortedby="content")
+
+            results = [{
+                    "path": os.path.join(settings.MEDIA_URL, res["path"].lstrip("./").lstrip("media/")).replace("\\", "/"),
+                    "title": res["title"]
+                } for res in results]
+            
+            if reverse_order.lower() == "true":
+                results.reverse()
+            return render(request, "item/search_documents.html", {
+                    "results": results,
+                    "query": query,
+                    "reverse_order": "false" if reverse_order == "true" else "true"
+                }
+            )
+
 
 def predictive_search(request):
     query = request.GET.get('query', '').strip()
